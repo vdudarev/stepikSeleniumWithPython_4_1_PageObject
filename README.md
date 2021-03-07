@@ -1,1 +1,1 @@
-# stepikSeleniumWithPython_4_1_PageObject
+# stepikSeleniumWithPython_4_3_PO_betterDesign
