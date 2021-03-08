@@ -4,6 +4,7 @@ import pytest
 import time
 
 
+@pytest.mark.nomark
 @pytest.mark.parametrize('link', ["http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer0",
                                   "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer1",
                                   "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer2",
@@ -14,25 +15,26 @@ import time
                                   pytest.param("http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer7", marks=pytest.mark.xfail),
                                   "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer8",
                                   "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer9"])
-def ___test_guest_can_add_product_to_basket(browser, link):
-    # page = ProductPage(browser, "http://selenium1py.pythonanywhere.com/catalogue/the-shellcoders-handbook_209/?promo=newYear")
-    # page = ProductPage(browser, "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=newYear2019")
+def test_guest_can_add_product_to_basket(browser, link):
     page = ProductPage(browser, link)
     page.open()
     page.add_product_to_basket()
 
 
-def ___test_guest_cant_see_success_message_after_adding_product_to_basket(browser):
+@pytest.mark.nomark
+@pytest.mark.xfail
+def test_guest_cant_see_success_message_after_adding_product_to_basket(browser):
     # Открываем страницу товара
     page = ProductPage(browser, "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/")
     page.open()
     # Добавляем товар в корзину
     page.add_product_to_basket_simple()
-    # Проверяем, что нет сообщения об успехе с помощью is_not_element_present
+    # Проверяем, что нет сообщения об успехе с помощью is_not_element_present (а оно должно быть - тест xfail)
     page.should_not_be_success_message()
 
 
-def ___test_guest_cant_see_success_message(browser):
+@pytest.mark.nomark
+def test_guest_cant_see_success_message(browser):
     # Открываем страницу товара
     page = ProductPage(browser, "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/")
     page.open()
@@ -40,16 +42,19 @@ def ___test_guest_cant_see_success_message(browser):
     page.should_not_be_success_message()
 
 
-def ___test_message_disappeared_after_adding_product_to_basket(browser):
+@pytest.mark.nomark
+@pytest.mark.xfail
+def test_message_disappeared_after_adding_product_to_basket(browser):
     # Открываем страницу товара
     page = ProductPage(browser, "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/")
     page.open()
     # Добавляем товар в корзину
     page.add_product_to_basket_simple()
-    # Проверяем, что нет сообщения об успехе с помощью is_disappeared
+    # Проверяем, что нет сообщения об успехе с помощью is_disappeared (а оно должно быть - тест xfail)
     page.should_not_be_success_message_with_time()
 
 
+@pytest.mark.nomark
 def test_guest_should_see_login_link_on_product_page(browser):
     link = "http://selenium1py.pythonanywhere.com/en-gb/catalogue/the-city-and-the-stars_95/"
     page = ProductPage(browser, link)
@@ -57,6 +62,7 @@ def test_guest_should_see_login_link_on_product_page(browser):
     page.should_be_login_link()
 
 
+@pytest.mark.nomark
 def test_guest_can_go_to_login_page_from_product_page(browser):
     link = "http://selenium1py.pythonanywhere.com/en-gb/catalogue/the-city-and-the-stars_95/"
     page = ProductPage(browser, link)
@@ -66,6 +72,7 @@ def test_guest_can_go_to_login_page_from_product_page(browser):
     lpage.should_be_login_page()
 
 
+@pytest.mark.nomark
 def test_guest_cant_see_product_in_basket_opened_from_product_page(browser):
     # Гость открывает страницу товара
     link = "http://selenium1py.pythonanywhere.com/en-gb/catalogue/the-city-and-the-stars_95/"
@@ -80,24 +87,19 @@ def test_guest_cant_see_product_in_basket_opened_from_product_page(browser):
 
 @pytest.mark.login
 class TestLoginFromProductPage:
-    @pytest.fixture(scope="function", autouse=True)
-    def setup(self):
-        # self.product = ProductFactory(title="Best book created by robot")
-        # создаем по апи
-        self.link = self.product.link
-        yield
-        # после этого ключевого слова начинается teardown
-        # выполнится после каждого теста в классе
-        # удаляем те данные, которые мы создали
-        self.product.delete()
+    link = "http://selenium1py.pythonanywhere.com/en-gb/catalogue/the-city-and-the-stars_95/"
 
     def test_guest_can_go_to_login_page_from_product_page(self, browser):
         page = ProductPage(browser, self.link)
-        # дальше обычная реализация теста
+        page.open()
+        page.go_to_login_page()
+        lpage = LoginPage(browser=page.browser, url=page.browser.current_url)
+        lpage.should_be_login_page()
 
     def test_guest_should_see_login_link(self, browser):
         page = ProductPage(browser, self.link)
-        # дальше обычная реализация теста
+        page.open()
+        page.should_be_login_link()
 
 
 @pytest.mark.register_user
@@ -127,4 +129,4 @@ class TestUserAddToBasketFromProductPage:
     def test_user_can_add_product_to_basket(self, browser):
         page = ProductPage(browser, "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/")
         page.open()
-        page.add_product_to_basket()
+        page.add_product_to_basket_simple()
